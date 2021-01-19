@@ -1,7 +1,5 @@
 import asyncio
-from dataclasses import dataclass
 from enum import Enum
-import logging
 import re
 
 LIP_RESPONSE_RE = re.compile("~([A-Z]+),([0-9.]+),([0-9.]+),([0-9.]+)")
