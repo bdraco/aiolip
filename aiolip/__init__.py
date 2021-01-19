@@ -40,7 +40,7 @@ class LIP:
         self._host = None
         self._read_connect_lock = asyncio.Lock()
         self._disconnect_event = asyncio.Event()
-        self._connecting_event = asyncio.Event()
+        self._reconnecting_event = asyncio.Event()
         self._subscriptions = []
         self._last_keep_alive_response = None
         self._keep_alive_task = None
@@ -65,7 +65,6 @@ class LIP:
     async def _async_connect(self, server_addr):
         """Make the connection."""
         _LOGGER.debug("Connecting to %s", server_addr)
-        self._connecting_event.set()
         self.connection_state = LIPConenctionState.CONNECTING
         reader, writer = await asyncio.wait_for(
             asyncio.open_connection(
@@ -89,18 +88,19 @@ class LIP:
         )
         self.connection_state = LIPConenctionState.CONNECTED
         self._host = server_addr
-        self._connecting_event.clear()
+        self._reconnecting_event.clear()
         _LOGGER.debug("Connected to %s", server_addr)
 
     async def _async_disconnected(self):
         """Reconnect after disconnected."""
-        if self._connecting_event.is_set():
+        if self._reconnecting_event.is_set():
             return
 
         if self._lip:
             self._lip.close()
             self._lip = None
 
+        self._reconnecting_event.set()
         async with self._read_connect_lock:
             self.connection_state = LIPConenctionState.NOT_CONNECTED
             while not self._disconnect_event.is_set():
@@ -171,7 +171,7 @@ class LIP:
                 (
                     read_task,
                     self._disconnect_event.wait(),
-                    self._connecting_event.wait(),
+                    self._reconnecting_event.wait(),
                 ),
                 timeout=LIP_READ_TIMEOUT,
                 return_when=asyncio.FIRST_COMPLETED,
@@ -183,7 +183,9 @@ class LIP:
             _LOGGER.debug("Stopping run because of disconnect_event")
             return
 
-        if isinstance(read_task.exception(), asyncio.TimeoutError):
+        if isinstance(read_task.exception(), asyncio.TimeoutError) or isinstance(
+            read_task.exception(), BrokenPipeError
+        ):
             return
 
         self._process_message(read_task.result())
