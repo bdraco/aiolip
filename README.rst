@@ -24,7 +24,8 @@ Async Lutron Integration Protocol
 
 
 Example Usage
---------
+-------------
+
 .. code-block:: python
 
         import asyncio
@@ -47,8 +48,8 @@ Example Usage
                 _LOGGER.warning(msg)
 
         lip.subscribe(message)
-        asyncio.create_task(lip.async_run())
-        await lip.query(LIPMode.OUTPUT, 31, 1)
+        run_task = asyncio.create_task(lip.async_run())
+        await run_task
         await lip.async_stop()
 
         if __name__ == "__main__":
