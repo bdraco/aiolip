@@ -185,11 +185,15 @@ class LIP:
             _LOGGER.debug("Stopping run because of disconnect_event")
             return
 
+        if self._reconnecting_event.is_set():
+            _LOGGER.debug("Stopping run because of reconnecting_event")
+            return
+
         try:
             self._process_message(read_task.result())
         except asyncio.TimeoutError:
             return
-        except BrokenPipeError as ex:
+        except (asyncio.InvalidStateError, BrokenPipeError) as ex:
             _LOGGER.debug("Error processing message", exc_info=ex)
             return
 
