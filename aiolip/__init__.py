@@ -187,7 +187,9 @@ class LIP:
 
         try:
             self._process_message(read_task.result())
-        except (asyncio.TimeoutError, BrokenPipeError) as ex:
+        except asyncio.TimeoutError:
+            return
+        except BrokenPipeError as ex:
             _LOGGER.debug("Error processing message", exc_info=ex)
             return
 
