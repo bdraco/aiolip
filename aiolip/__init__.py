@@ -108,6 +108,7 @@ class LIP:
             while not self._disconnect_event.is_set():
                 try:
                     await self._async_connect(self._host)
+                    self._keepalive_watchdog()
                     return
                 except (OSError, asyncio.TimeoutError):
                     _LOGGER.debug(
