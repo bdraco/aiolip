@@ -107,7 +107,7 @@ class LIP:
                 try:
                     await self._async_connect(self._host)
                     return
-                except asyncio.TimeoutError:
+                except (OSError, asyncio.TimeoutError):
                     _LOGGER.debug(
                         "Timed out while trying to reconnect to %s", self._host
                     )
@@ -183,12 +183,11 @@ class LIP:
             _LOGGER.debug("Stopping run because of disconnect_event")
             return
 
-        if isinstance(read_task.exception(), asyncio.TimeoutError) or isinstance(
-            read_task.exception(), BrokenPipeError
-        ):
+        try:
+            self._process_message(read_task.result())
+        except (asyncio.TimeoutError, BrokenPipeError) as ex:
+            _LOGGER.debug("Error processing message", exc_info=ex)
             return
-
-        self._process_message(read_task.result())
 
     def _process_message(self, response):
         """Process a lip message."""
