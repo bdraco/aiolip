@@ -23,8 +23,8 @@ LIP_BUTTON_RELEASE = 4
 
 LIP_KEEP_ALIVE = "?SYSTEM,10"
 
-CONNECT_TIMEOUT = 45  # The bridge can try to do ident which can take up to 30 seconds
-SOCKET_TIMEOUT = 45
+CONNECT_TIMEOUT = 10
+SOCKET_TIMEOUT = 45  # The bridge can try to do ident which can take up to 30 seconds
 
 LIP_READ_TIMEOUT = 60
 LIP_KEEP_ALIVE_INTERVAL = 60
