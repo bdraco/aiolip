@@ -3,7 +3,7 @@ import logging
 import socket
 import time
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 from .data import LIP_PROTOCOL_MODE_TO_LIPMODE, LIPMessage, LIPMode
 from .exceptions import LIPConnectionStateError, LIPProtocolError
