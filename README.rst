@@ -1,7 +1,8 @@
+This code is now archived since it was used to monitor Pico remotes which are now available via LEAP: https://github.com/home-assistant/core/pull/61032
+
 =================================
 Async Lutron Integration Protocol
 =================================
-
 
 .. image:: https://img.shields.io/pypi/v/aiolip.svg
         :target: https://pypi.python.org/pypi/aiolip
